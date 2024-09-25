@@ -15,14 +15,16 @@ function List() {
     }, [characters.length]);
 
     return (
-        <div>
+        <div className="p-4">
             <h2>Characters</h2>
-            {
-                loading ? 
-                    <p>Loading...</p> : characters.map(character => (
-                    <Character key={character.id} {...character} />
-                ))
-            }
+            <div className="row g-4">
+                {
+                    loading ? 
+                        <p>Loading...</p> : characters.map(character => (
+                        <Character key={character.id} {...character} />
+                    ))
+                }
+            </div>
         </div>
     );        
 }
