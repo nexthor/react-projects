@@ -1,3 +1,4 @@
+import React from 'react';
 import './Link.css';
 
 function Link({ url, title }) {
