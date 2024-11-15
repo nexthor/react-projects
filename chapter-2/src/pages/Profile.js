@@ -1,59 +1,58 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import './Profile.css';
+import { useState, useEffect } from 'react';
 import Link from '../components/Link';
+import List from '../components/List';
+import './Profile.css';
 
 function Profile({ userName }){
-    const [loading, setLoading] = useState(false);
-    const [profile, setProfile] = useState({});
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    
     useEffect(() => {
-        async function fetchData(){
-            const profile = await fetch(`https://api.github.com/users/${userName}`);
-            const result = await profile.json();
-            if (result){
-                setProfile(result);
-                setLoading(false);
-            }
-        }
-
-        fetchData();
+        fetch(`https://api.github.com/users/${userName}`)
+        .then(response => response.json())
+        .then(data => {
+            setUser(data);
+            setLoading(false);
+        }).catch(error => setLoading(false));
     }, [userName]);
+    
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+    
+    const items = [
+        {
+            field: 'html_url',
+            value: <Link url={user.html_url} title={user.html_url} />
+        },
+        {
+            field: 'repos_url',
+            value: <Link url={user.repos_url} title={user.repos_url} />
+        },
+        {
+            field: 'name',
+            value: user.name
+        },
+        {
+            field: 'location',
+            value: user.location
+        },
+        {
+            field: 'bio',
+            value: user.bio
+        },
+        {
+            field: 'email',
+            value: user.email
+        },
+    ];
 
     return (
-        <div className="Profile-container">
-            <h2>About me</h2>
-            {
-                loading ? (
-                    <p>Loading...</p>
-                ) : (
-                    <div>
-                        <img 
-                            className="Profile-avatar"
-                            src={profile.avatar_url} 
-                            alt={profile.name} />
-                        <ul>
-                            <li>
-                                <span>html_url: </span>
-                                <Link url={profile.html_url} title={profile.html_url} />
-                            </li>
-                            <li>
-                                <span>repos_url: </span> 
-                                <Link url={profile.repos_url} title={profile.repos_url} />
-                            </li>
-                            <li><span>name: </span> {profile.name}</li>
-                            <li><span>company: </span>
-                            {profile.company}</li>
-                            <li><span>location: </span>
-                            {profile.location}</li>
-                            <li><span>email: </span>
-                            {profile.email}</li>
-                            <li><span>bio: </span> {profile.bio}</li>
-                        </ul>
-                    </div>
-                )
-            }
+        <div className='Profile-container'>
+            <img src={user.avatar_url} alt={user.name} />
+            <List items={items} />
         </div>
-    )
+    );
 }
 
 export default Profile;
